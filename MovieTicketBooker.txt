@@ -1,0 +1,524 @@
+import java.util.Scanner;
+import java.io.*;
+
+class Book {
+    String name;
+    String date;
+    int r1, r2, r3, balcony;
+}
+
+public class Main {
+    static void Book_Ticket() {
+        Scanner sc = new Scanner(System.in);
+        Book b = new Book();
+        File fp;
+        File ufp;
+        int total_seat, total_amount, row, temp_row, i, j, k, s1, s2, s3, s4;
+        long mobile;
+        String name1, name2;
+        char ch, choice, ch1;
+        try {
+            fp = new File("data.txt");
+            ufp = new File("OldTransaction.txt");
+            Scanner fileScanner = new Scanner(fp);
+            if (!fp.exists()) {
+                System.out.println("file does not found!");
+                System.exit(1);
+            } else if (!fileScanner.hasNextLine()) {
+                System.out.println("\nNo Movie is available to book right now! Check after few days!!!");
+                main();
+            } else {
+                System.out.println("\n================ Now Playing =====================");
+                System.out.println("Movie Name: " + b.name);
+                System.out.println("Release Date (DD/MM/YYYY): " + b.date);
+                System.out.println("Ticket pricing (per seat):");
+                System.out.println("\t\tRow 1 to 4: " + b.r1 + " Rs.");
+                System.out.println("\t\tRow 5 to 8: " + b.r2 + " Rs.");
+                System.out.println("\t\tRow 9 to 12: " + b.r3 + " Rs.");
+                System.out.println("\t\tBalcony: " + b.balcony + " Rs.");
+            }
+            if (s1 == 0 && s2 == 0 && s3 == 0 && s4 == 0) {
+                System.out.println("\nThe seats are full! Visit after few days...\n\n");
+                main();
+            } else {
+                choose: {
+                    fileScanner = new Scanner(fp);
+                    if (!fileScanner.hasNextLine()) {
+                        System.out.println("No movie available, please check after few days!!!");
+                        System.exit(1);
+                    }
+                    System.out.println("\nDo you want to Book tickets for above movie?(y/n)\n");
+                    choice = sc.next().charAt(0);
+                    if (choice == 'y' || choice == 'Y') {
+                        System.out.println("\n***Fill Details***");
+                        name: {
+                            System.out.println("\nEnter your name (First Name<space>Last Name):");
+                            name1 = sc.next();
+                            name2 = sc.next();
+                            for (i = 0; i < name1.length(); i++) {
+                                int j = name1.charAt(i);
+                                if ((j >= 97 && j <= 122) || (j >= 65 && j <= 90) || (j == 32 && j == 92)) {
+                                    continue;
+                                } else {
+                                    System.out.println("\nFirst name is invalid! Enter alphabets only!!!");
+                                    goto name;
+                                }
+                            }
+                            for (i = 0; i < name2.length(); i++) {
+                                k = name2.charAt(i);
+                                if ((k >= 97 && k <= 122) || (k >= 65 && k <= 90) || (k == 32 && k == 92)) {
+                                    continue;
+                                } else {
+                                    System.out.println("\nLast name invalid! Enter alphabets only!!!");
+                                    goto name;
+                                }
+                            }
+                        }
+                        next: {
+                            mobile = 0;
+                            System.out.println("\nEnter mobile number :");
+                            mobile = sc.nextLong();
+                            if (mobile <= 7000000000L) {
+                                System.out.println("\nInvalid mobile number!!!\n");
+                                goto next;
+                            } else if (mobile > 9999999999L) {
+                                System.out.println("\nInvalid mobile number!!!\n");
+                                goto next;
+                            } else if (mobile >= 7000000000L && mobile <= 9999999999L) {
+                                goto seats;
+                            }
+                        }
+                        seats: {
+                            System.out.println("\nSelect rows:\n1.Row 1 to 4: " + b.r1 + " Rs per seat (" + s1 + " seats available)\n2.Row 5 to 8: " + b.r2 + " Rs per seat (" + s2 + " seats available)\n3.Row 9 to 12: " + b.r3 + " Rs per seat (" + s3 + " seats available)\n4.Balcony: " + b.balcony + " Rs per seat (" + s4 + " seats available)\n");
+                            row = sc.nextInt();
+                            temp_row = row;
+                            if (row == 1)
+                                row = b.r1;
+                            else if (row == 2)
+                                row = b.r2;
+                            else if (row == 3)
+                                row = b.r3;
+                            else if (row == 4)
+                                row = b.balcony;
+                            else {
+                                System.out.println("\nWrong Choice!!!");
+                                goto seats;
+                            }
+                            fileScanner = new Scanner(fp);
+                            b.name = fileScanner.next();
+                            b.date = fileScanner.next();
+                            b.r1 = fileScanner.nextInt();
+                            b.r2 = fileScanner.nextInt();
+                            b.r3 = fileScanner.nextInt();
+                            b.balcony = fileScanner.nextInt();
+                            fileScanner.close();
+                            enter: {
+                                System.out.println("\nEnter total number of seats:");
+                                total_seat = sc.nextInt();
+                                if (total_seat == 0) {
+                                    System.out.println("\nNumber of seats should not be 0...");
+                                    goto enter;
+                                } else if (temp_row == 1) {
+                                    if (total_seat > s1) {
+                                        System.out.println("\n" + total_seat + " seats are not available in row 1 to 4!");
+                                        choice1: {
+                                            System.out.println("\nDo you want to change row?(1=Yes, 0=No)");
+                                            ch1 = sc.next().charAt(0);
+                                            if (ch1 == 1)
+                                                goto seats;
+                                            else if (ch1 == 0) {
+                                                System.out.println("\nOkay! No problem!!!\n\n");
+                                                Thread.sleep(2000);
+                                                main();
+                                            } else {
+                                                System.out.println("\nWrong choice!!!");
+                                                goto choice1;
+                                            }
+                                        }
+                                    } else if (temp_row <= s1) {
+                                        s1 = s1 - total_seat;
+                                        goto booking;
+                                    }
+                                } else if (temp_row == 2) {
+                                    if (total_seat > s2) {
+                                        System.out.println("\n" + total_seat + " seats are not available in row 5 to 8!");
+                                        choice2: {
+                                            System.out.println("\nDo you want to change row?(1=Yes, 0=No)");
+                                            ch1 = sc.next().charAt(0);
+                                            if (ch1 == 1)
+                                                goto seats;
+                                            else if (ch1 == 0) {
+                                                System.out.println("\nOkay! No problem!!!\n\n");
+                                                main();
+                                            } else {
+                                                System.out.println("\nWrong choice!!!");
+                                                goto choice2;
+                                            }
+                                        }
+                                    } else if (temp_row <= s2) {
+                                        s2 = s2 - total_seat;
+                                        goto booking;
+                                    }
+                                } else if (temp_row == 3) {
+                                    if (total_seat > s3) {
+                                        System.out.println("\n" + total_seat + " seats are not available in row 9 to 12!");
+                                        choice3: {
+                                            System.out.println("\nDo you want to change row?(1=Yes, 0=No)");
+                                            ch1 = sc.next().charAt(0);
+                                            if (ch1 == 1)
+                                                goto seats;
+                                            else if (ch1 == 0) {
+                                                System.out.println("\nOkay! No problem!!!\n\n");
+                                                main();
+                                            } else {
+                                                System.out.println("\nWrong choice!!!");
+                                                goto choice3;
+                                            }
+                                        }
+                                    } else if (temp_row <= s3) {
+                                        s3 = s3 - total_seat;
+                                        goto booking;
+                                    }
+                                } else if (temp_row == 4) {
+                                    if (total_seat > s4) {
+                                        System.out.println("\n" + total_seat + " seats are not available in balcony!");
+                                        choice4: {
+                                            System.out.println("\nDo you want to change row and book tickets? (1=Yes, 0=No)\n");
+                                            ch1 = sc.next().charAt(0);
+                                            if (ch1 == 1)
+                                                goto seats;
+                                            else if (ch1 == 0) {
+                                                System.out.println("\nOkay! No problem!!!\n\n");
+                                                main();
+                                            } else {
+                                                System.out.println("\nWrong choice!!!");
+                                                goto choice4;
+                                            }
+                                        }
+                                    } else if (temp_row <= s4) {
+                                        s4 = s4 - total_seat;
+                                        goto booking;
+                                    }
+                                }
+                            }
+                        }
+                        booking: {
+                            total_amount = row * total_seat;
+                            System.out.println("\nTckets Booked successfully!!!\n*** ENJOY MOVIE ***\nGenerating Bill");
+                            Thread.sleep(750);
+                            System.out.print(".");
+                            Thread.sleep(750);
+                            System.out.print(".");
+                            Thread.sleep(750);
+                            System.out.print(".");
+                            Thread.sleep(750);
+                            System.out.println("\n\t\t*** Bill ***");
+                            System.out.println("========================================================");
+                            System.out.println("\t\tName : " + name1 + " " + name2);
+                            System.out.println("\t\tMobile Number : " + mobile);
+                            System.out.println("\t\tMovie name : " + b.name);
+                            if (temp_row == 1)
+                                System.out.println("\t\tRow : 1 to 4");
+                            else if (temp_row == 2)
+                                System.out.println("\t\tRow : 5 to 8");
+                            else if (temp_row == 3)
+                                System.out.println("\t\tRow : 9 to 12");
+                            else if (temp_row == 4)
+                                System.out.println("\t\tRow : Balcony");
+                            System.out.println("\t\tTotal seats : " + total_seat);
+                            System.out.println("\t\tCost per ticket : " + row + " Rs.");
+                            System.out.println("\t\tTotal Amount : " + total_amount + " Rs.");
+                            System.out.println("========================================================");
+                            System.out.println("\n\nThank You! Visit again!!!\n\n");
+                            Thread.sleep(2000);
+                            ufp = new File("OldTransaction.txt");
+                            if (!ufp.exists()) {
+                                System.out.println("File not Found!");
+                            } else {
+                                FileWriter fw = new FileWriter(ufp, true);
+                                fw.write(name1 + " " + name2 + " " + mobile + " " + total_seat + " " + temp_row + " " + total_amount + " " + b.name + " " + row + "\n");
+                                fw.close();
+                            }
+                            System.out.println("\n");
+                            FileWriter fw = new FileWriter(fp);
+                            fw.write(b.name + " " + b.date + " " + b.r1 + " " + b.r2 + " " + b.r3 + " " + b.balcony + "\n" + s1 + " " + s2 + " " + s3 + " " + s4);
+                            fw.close();
+                        }
+                    } else if (choice == 'n' || choice == 'N') {
+                        System.out.println("No problem! Visit after few days!");
+                        System.exit(0);
+                    } else {
+                        System.out.println("\nWrong Choice!!!");
+                        goto choose;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void View_Movie() {
+        File fp;
+        char ch;
+        int s1, s2, s3, s4;
+        try {
+            fp = new File("data.txt");
+            Scanner fileScanner = new Scanner(fp);
+            if (!fp.exists()) {
+                System.out.println("file does not found !");
+                System.exit(1);
+            } else {
+                if (fileScanner.hasNextLine()) {
+                    System.out.println("================ Now Playing =====================");
+                    System.out.println("Movie Name: " + b.name);
+                    System.out.println("Release Date: " + b.date);
+                    System.out.println("Ticket pricing:\n1.Row 1 to 4: " + b.r1 + " Rs per seat (" + s1 + " seats available)\n2.Row 5 to 8: " + b.r2 + " Rs per seat (" + s2 + " seats available)\n3.Row 9 to 12: " + b.r3 + " Rs per seat (" + s3 + " seats available)\n4.Balcony: " + b.balcony + " Rs per seat (" + s4 + " seats available)\n");
+                    Thread.sleep(2000);
+                } else {
+                    System.out.println("No movie available, please check after few days!!!");
+                    Thread.sleep(2000);
+                    main();
+                }
+            }
+            fileScanner.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void Add_Movie() {
+        Scanner sc = new Scanner(System.in);
+        File fp;
+        Book b = new Book();
+        String temp2, password = "password", p, p1 = "_back_", p2 = "_BACK_";
+        int l, s1 = 40, s2 = 40, s3 = 40, s4 = 80;
+        try {
+            System.out.println("\n\t\t\tCaution!!!\nThis will delete now playing movie (if available) and will add new movie!!!\nIf you want to go back then type '_back_' or '_BACK_'");
+            login: {
+                l = 0;
+                System.out.println("\nEnter Password:");
+                p = sc.nextLine();
+                if (p.equals(password)) {
+                    System.out.println("\nPassword matched...\n");
+                    System.out.print("Enter Movie name (Use '_' for spaces):- ");
+                    b.name = sc.nextLine();
+                    System.out.print("Enter Release Date(DD/MM/YYYY):- ");
+                    b.date = sc.nextLine();
+                    System.out.print("Enter Ticket Price for row 1 to 4 (Rs.):- ");
+                    b.r1 = sc.nextInt();
+                    System.out.print("Enter Ticket Price for row 5 to 8 (Rs.):- ");
+                    b.r2 = sc.nextInt();
+                    System.out.print("Enter Ticket Price for row 9 to 12 (Rs.):- ");
+                    b.r3 = sc.nextInt();
+                    System.out.print("Enter Ticket Price for balcony (Rs.):- ");
+                    b.balcony = sc.nextInt();
+                    fp = new File("data.txt");
+                    if (!fp.exists()) {
+                        System.out.println("File not Found");
+                    } else {
+                        FileWriter fw = new FileWriter(fp);
+                        fw.write(b.name + " " + b.date + " " + b.r1 + " " + b.r2 + " " + b.r3 + " " + b.balcony + "\n" + s1 + " " + s2 + " " + s3 + " " + s4);
+                        fw.close();
+                        System.out.println("Adding movie. Please wait");
+                        Thread.sleep(1000);
+                        System.out.print(".");
+                        Thread.sleep(1000);
+                        System.out.print(".");
+                        Thread.sleep(1000);
+                        System.out.print(".");
+                        Thread.sleep(1000);
+                        System.out.println("Movie added successfully...");
+                    }
+                    System.out.println("\n");
+                } else if (p.equals(p1) || p.equals(p2)) {
+                    System.out.println("\nOkay! Process cancelled. Returning to main menu\n\n");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    main();
+                } else {
+                    System.out.println("\nInvalid Password!!!");
+                    goto login;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void Delete_Movie() {
+        Scanner sc = new Scanner(System.in);
+        File fp;
+        String temp2, password = "password", p;
+        int l;
+        try {
+            System.out.println("\nEnter Password:");
+            p = sc.nextLine();
+            if (p.equals(password)) {
+                System.out.println("\nPassword matched...\n");
+                fp = new File("data.txt");
+                if (!fp.exists()) {
+                    System.out.println("file does not found!");
+                    System.exit(1);
+                } else {
+                    fp.delete();
+                    System.out.println("\nDeleting movie\n\n");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.println("\nMovie Deleted Successfully!!!\n\n");
+                    Thread.sleep(2000);
+                    main();
+                }
+            } else {
+                goto login;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void Old_Transactions() {
+        File fp;
+        String temp2, password = "password", p, p2;
+        int l;
+        try {
+            fp = new File("OldTransaction.txt");
+            Scanner fileScanner = new Scanner(fp);
+            if (!fp.exists()) {
+                System.out.println("file does not found !");
+                System.exit(1);
+            } else {
+                login: {
+                    l = 0;
+                    System.out.println("\nEnter Password:");
+                    p = sc.nextLine();
+                    if (p.equals(password)) {
+                        System.out.println("\nPassword matched...\nFetching old transactions");
+                        Thread.sleep(1000);
+                        System.out.print(".");
+                        Thread.sleep(1000);
+                        System.out.print(".");
+                        Thread.sleep(1000);
+                        System.out.print(".");
+                        Thread.sleep(1000);
+                        System.out.println("\n\n\t***Old Ticket Booking Records***");
+                        System.out.println("===============================================");
+                        while (fileScanner.hasNextLine()) {
+                            System.out.println(fileScanner.nextLine());
+                        }
+                        System.out.println("===============================================\n\n");
+                    } else {
+                        System.out.println("\nInvalid Password!!!");
+                        goto login;
+                    }
+                }
+            }
+            fileScanner.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    static void Delete_Transactions() {
+        Scanner sc = new Scanner(System.in);
+        File fp;
+        String temp2, password = "password", p;
+        int l;
+        try {
+            System.out.println("\nEnter Password:");
+            p = sc.nextLine();
+            if (p.equals(password)) {
+                System.out.println("\nPassword matched...");
+                fp = new File("OldTransaction.txt");
+                if (!fp.exists()) {
+                    System.out.println("file does not found!");
+                    System.exit(1);
+                } else {
+                    fp.delete();
+                    System.out.println("\nDeleting old transactions");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.print(".");
+                    Thread.sleep(1000);
+                    System.out.println("\nOld transactions Deleted Successfully!!!\n");
+                    Thread.sleep(2000);
+                    main();
+                }
+            } else {
+                goto login;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int ch;
+        do {
+            System.out.println("\n||=======================================================================||");
+            System.out.println("|| ||");
+            System.out.println("|| Welcome to Movie Ticket Booking System ||");
+            System.out.println("|| ||");
+            System.out.println("||=======================================================================||");
+            System.out.println("|| Press [1] To Book Tickets ||");
+            System.out.println("|| ||");
+            System.out.println("|| Press [2] To View Now Playing Movie ||");
+            System.out.println("|| ||");
+            System.out.println("|| Press [3] To Add New Movie (Admin Only) ||");
+            System.out.println("|| ||");
+            System.out.println("|| Press [4] To Delete Now Playing Movie (Admin Only) ||");
+            System.out.println("|| ||");
+            System.out.println("|| Press [5] To View All Transactions (Admin Only) ||");
+            System.out.println("|| ||");
+            System.out.println("|| Press [6] To Delete All Transactions (Admin Only) ||");
+            System.out.println("|| ||");
+            System.out.println("|| Press [7] To Exit ||");
+            System.out.println("||=======================================================================||");
+            System.out.println("|| Please Enter Your Choice:: ||");
+            System.out.println("||=======================================================================||\n\n");
+            ch = sc.nextInt();
+            switch (ch) {
+                case 1:
+                    Book_Ticket();
+                    break;
+                case 2:
+                    View_Movie();
+                    break;
+                case 3:
+                    Add_Movie();
+                    break;
+                case 4:
+                    Delete_Movie();
+                    break;
+                case 5:
+                    Old_Transactions();
+                    break;
+                case 6:
+                    Delete_Transactions();
+                    break;
+                case 7:
+                    System.out.println("\n*** Thank You! Visit Again!!! ***\n\n");
+                    System.exit(0);
+                default:
+                    System.out.println("\nWrong choice!!!\nTry Again!!!");
+                    break;
+            }
+        } while (ch != 7);
+    }
+}
+
+
